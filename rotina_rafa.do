@@ -253,41 +253,39 @@ set matsize 11000
 
 
 gen trat13=.
-replace trat13 =1 if rank_07==1 & rank_cp_x==3
-replace trat13 =0 if rank_07==1 & rank_cp_x==1
+replace trat13 =1 if rank_07==1 & rank_cp_x==1
+replace trat13 =0 if rank_07==1 & rank_cp_x==3
 
-drop trat13
-
-label variable trat13 " 1º quartil escola + 3º tercil cp"
+label variable trat13 " 1º quartil escola + 1º tercil cp em relação ao 3º tercil cp"
 
 gen trat12=.
 replace trat12=1 if rank_07==1 & rank_cp_x==1
 replace trat12=0 if rank_07==1 & rank_cp_x==2
 
-label variable trat12 "1º quartil escola + 2º tercil cp"
+label variable trat12 "1º quartil escola + 1º tercil cp em relação ao 2º tercil cp"
 
 gen trat11=.
 replace trat11=1 if rank_07==1 & rank_cp_x==1
 replace trat11=0 if rank_07==1 & rank_cp_x==2 
 replace trat11=0 if rank_07==1 & rank_cp_x==3 
  
-label variable trat11 "1º quartil escola + 2º e 3º tercil cp"
+label variable trat11 "1º quartil escola + 1º tercil cp em relação ao 2º e 3º tercil cp"
 
 
 gen trat43=.
 replace trat43=1 if rank_07==4 & rank_cp_x==1
 replace trat43=0 if rank_07==4 & rank_cp_x==3
 
-drop trat43
 
-label variable trat43 "4º quartil escola + 3º tercil cp"
+
+label variable trat43 "4º quartil escola + 1º tercil cp em relação ao 3º tercil"
 
 
 gen trat42=.
 replace trat42=1 if rank_07==4 & rank_cp_x==1
 replace trat42=0 if rank_07==4 & rank_cp_x==2
 
-label variable trat42 "4º quartil escola + 2º tercil cp"
+label variable trat42 "4º quartil escola + 1º tercil cp em relação ao 2º tercil"
 
 
 gen trat41=.
@@ -295,7 +293,7 @@ replace trat41=1 if rank_07==4 & rank_cp_x==1
 replace trat41=0 if rank_07==4 & rank_cp_x==2 
 replace trat41=0 if rank_07==4 & rank_cp_x==3 
  
-label variable trat41 "4º quartil escola + 2º e 3º tercil cp"
+label variable trat41 "4º quartil escola + 1º tercil cp em relação ao 2º e 3º tercil"
 
 
 ********************************************************************
@@ -313,26 +311,34 @@ replace trat02=0 if rank_cp_x==2
 
 label variable trat02 "3º tercil cp em relação ao 2º tercil cp"
 
+gen trat01 =.
+replace trat01=1 if rank_cp_x==1
+replace trat01=0 if rank_cp_x==2
+replace trat01=0 if rank_cp_x==3
+
+label variable trat01 "1º tercil cp em relação ao 2º e 3º tercil cp"
+
 save "D:\Pedro\Tese Pedro\Flypaper\Pareamento\censo\spaece_inicial_1.dta", replace
 
 *** Drop nas escolas entrantes*
-drop if tratamento==.
+*drop if tratamento==.
+
+*drop if trat43==.
 
 tab cod_escola, gen(cod_escola_i)
 **** Estimações  ******
 
-areg std_prof i.ano trat03, a(it) 
-
- 
-
-areg std_prof i.ano trat43, a(it) cl (cod_escola) 
-
-
-reg std_prof i.ano trat43 cod_escola_i1-cod_escola_i5163  
+areg std_prof i.ano trat01, a(it) cl(cod_escola)
 
 
 
-drop trat03 
+
+areg std_prof i.ano trat13, a(it)  cl(cod_escola)
+
+
+reg std_prof i.ano trat43 it i.cod_escola  
+
+
 
 
 use "D:\Pedro\Tese Pedro\Flypaper\Pareamento\censo\spaece_inicial_1.dta"
